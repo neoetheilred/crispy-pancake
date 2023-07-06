@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/neoetheilred/crispy-pancake/common"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	common.StartBookApi()
 }
