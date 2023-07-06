@@ -28,8 +28,9 @@ func StartBookApi() {
 		newBook("Random title", "Random summary")
 		w.WriteHeader(http.StatusOK)
 	})
-
-	http.ListenAndServe(":8080", nil)
+	port := ":8080"
+	log.Printf("Running on port %s", port)
+	http.ListenAndServe(port, nil)
 }
 
 func newBook(title, summary string) {
