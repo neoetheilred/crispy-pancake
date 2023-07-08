@@ -1,0 +1,8 @@
+{{define "booklist.gohtml"}}
+    {{range .}}
+        <div class="container border border-secondary rounded mt-3">
+            <h3>{{.Title}}</h3>
+            <p>{{.Summary}}</p>
+        </div>
+    {{end}}
+{{end}}

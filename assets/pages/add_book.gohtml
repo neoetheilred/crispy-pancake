@@ -1,0 +1,62 @@
+{{define "add_book.gohtml"}}
+    <div class="container mt-3">
+        <form id="bookForm">
+            <p><input type="text" id="title" name="title" placeholder="title" style="width: 100%;"/></p>
+            <p><textarea type="textarea" id="summary" name="summary" placeholder="summary" style="width: 100%; height: auto;"></textarea></p>
+            <p><input type="submit" value="Create book" class="btn btn-primary"/></p>
+        </form>
+    </div>
+    <script>
+        // Get the form element
+        var form = document.getElementById("bookForm");
+    
+        // Handle form submission event
+        form.addEventListener("submit", function(event) {
+          event.preventDefault(); // Prevent form from being submitted
+    
+          // Get form values
+          var title = document.getElementById("title").value;
+          var summary = document.getElementById("summary").value;
+    
+          // Perform any necessary validation here
+    
+          // Perform form submission
+          submitForm(title, summary);
+        });
+    
+        // Function to handle form submission
+        function submitForm(title, summary) {
+          // Create an object with the form data
+          var formData = {
+            title: title,
+            summary: summary
+          };
+    
+          // Perform an AJAX request to submit the form data
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/api/books/create", true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+    
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+              // Request was successful
+              console.log(xhr.responseText);
+              
+              // Optionally, you can reset the form after submission
+              form.reset();
+            } else {
+              // Request encountered an error
+              console.log("Error:", xhr.status);
+            }
+          };
+    
+          // Convert the form data to JSON
+          var jsonData = JSON.stringify(formData);
+    
+          // Send the request
+          xhr.send(jsonData);
+
+          window.location.href = "/home"
+        }
+      </script>
+{{end}}
