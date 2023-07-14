@@ -1,11 +1,10 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	"sort"
 	"sync"
 	"sync/atomic"
 )
@@ -16,41 +15,49 @@ type Book struct {
 	Summary string
 }
 
+func (b Book) GetTitle() string {
+	return b.Title
+}
+
+func (b Book) GetSummary() string {
+	return b.Summary
+}
+
 var books = map[int64]Book{}
 var booksMu sync.RWMutex
 var idCounter atomic.Int64
 
 func StartBookApi() {
-	http.HandleFunc("/api/books/all", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(books)
-	})
+	http.HandleFunc("/api/books/all", getAllBooks)
 
-	http.HandleFunc("/api/books/createRandom", func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.Method)
-		newBook("Random title", "Random summary")
-		w.WriteHeader(http.StatusOK)
-	})
+	http.HandleFunc("/api/books/createRandom", createRandomBook)
 
-	http.HandleFunc("/api/books/edit", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
-		id, title, summary := r.Form["id"], r.Form["title"], r.Form["summary"]
-		if len(id) == 0 || len(title) == 0 || len(summary) == 0 {
-			json.NewEncoder(w).Encode([]string{"error: id, title and summary must be set"})
-		}
-		n, err := strconv.ParseInt(id[0], 10, 64)
-		if err != nil {
-			json.NewEncoder(w).Encode([]string{"id must be a valid int64"})
-		}
-		if err := edit(n, Book{n, title[0], summary[0]}); err != nil {
-			json.NewEncoder(w).Encode([]string{fmt.Sprintf("error: %s", err.Error())})
-		}
+	http.HandleFunc("/api/books/create", createBook)
 
-		json.NewEncoder(w).Encode([]string{"ok"})
-	})
+	http.HandleFunc("/api/books/update", updateBook)
+
+	http.HandleFunc("/home", showBooksPage)
+
+	http.HandleFunc("/create", createBookPage)
 
 	port := ":8080"
 	log.Printf("Running on port %s", port)
 	http.ListenAndServe(port, nil)
+}
+
+func booksToArray() []Book {
+	booksMu.Lock()
+	defer booksMu.Unlock()
+	res := []Book{}
+	for _, v := range books {
+		res = append(res, v)
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].ID < res[j].ID
+	})
+
+	return res
 }
 
 func newBook(title, summary string) {
