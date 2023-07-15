@@ -1,8 +1,9 @@
 {{define "booklist.gohtml"}}
     {{range .}}
-        <div class="container border border-secondary rounded mt-3">
+        <div class="container border border-secondary rounded mt-3 pb-2">
             <h3>{{.Title}}</h3>
-            <p>{{.Summary}}</p>
+            <p style="white-space: pre-wrap;">{{.Summary}}</p>
+            <input type="button" class="btn btn-secondary" value="delete" onclick="fetch('/api/books/delete?id={{.ID}}'); history.go(0);"/>
         </div>
     {{end}}
 {{end}}
