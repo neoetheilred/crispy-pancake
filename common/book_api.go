@@ -13,11 +13,11 @@ type Book struct {
 	Summary string
 }
 
-func (b Book) GetID() int64 {
+func (b *Book) GetID() int64 {
 	return b.ID
 }
 
-func (b Book) SetID(id int64) {
+func (b *Book) SetID(id int64) {
 	b.ID = id
 }
 
@@ -38,7 +38,7 @@ func (b Book) GetSummary() string {
 // var books = map[int64]Book{}
 // var booksMu sync.RWMutex
 // var idCounter atomic.Int64
-var books = storage.NewStorage[Book]()
+var books = storage.NewStorage[*Book]()
 
 func StartBookApi() {
 	http.HandleFunc("/api/books/all", getAllBooks)

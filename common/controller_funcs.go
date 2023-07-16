@@ -17,7 +17,7 @@ func getAllBooks(w http.ResponseWriter, r *http.Request) {
 func createRandomBook(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Method)
 	// newBook("Random title", "Random summary")
-	books.Add(Book{Title: "Random Title", Summary: "Random Summary"})
+	books.Add(&Book{Title: "Random Title", Summary: "Random Summary"})
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -25,7 +25,7 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	formData := map[string]string{}
 	json.NewDecoder(r.Body).Decode(&formData)
 	// newBook(formData["title"], formData["summary"])
-	books.Add(Book{Title: formData["title"], Summary: formData["summary"]})
+	books.Add(&Book{Title: formData["title"], Summary: formData["summary"]})
 	json.NewEncoder(w).Encode([]string{"ok"})
 }
 
@@ -56,7 +56,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	}
 	// if err := edit(n, Book{n, title[0], summary[0]}); err != nil {
 
-	if ok := books.Update(n, Book{Title: title[0], Summary: summary[0]}); !ok {
+	if ok := books.Update(n, &Book{Title: title[0], Summary: summary[0]}); !ok {
 		json.NewEncoder(w).Encode([]string{fmt.Sprintf("error: %s", err.Error())})
 	}
 

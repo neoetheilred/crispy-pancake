@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"log"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -33,7 +34,11 @@ func (s *Storage[T]) DeleteById(id int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.storage[id]; ok {
+		log.Println(s.storage)
 		delete(s.storage, id)
+		log.Println(s.storage)
+	} else {
+		log.Println("Not found")
 	}
 }
 
@@ -64,7 +69,10 @@ func (s *Storage[T]) Update(id int64, value T) bool {
 
 func (s *Storage[T]) GetAll() []T {
 	res := make([]T, 0, len(s.storage))
-	for _, value := range s.storage {
+	for id, value := range s.storage {
+		log.Println(id)
+		value.SetID(id)
+		log.Println(value)
 		res = append(res, value)
 	}
 	sort.Slice(res, func(i, j int) bool { return res[i].GetID() < res[j].GetID() })
